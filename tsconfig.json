@@ -1,0 +1,68 @@
+{
+  "compilerOptions": {
+    /* linguagem */
+    "target": "ES2022",
+    "lib": ["ES2023"],
+
+    /* módulos */
+    "module": "NodeNext",
+    "moduleResolution": "NodeNext",
+    "ignoreDeprecations":"6.0",
+    /* paths */
+    "baseUrl": "./src",
+
+    "paths": {
+      "@/*": ["*"],
+      "@config/*": ["config/*"],
+      "@infra/*": ["infra/*"],
+      "@modules/*": ["modules/*"],
+      "@shared/*": ["shared/*"]
+    },
+
+    /* output */
+    "outDir": "./dist",
+    "rootDir": "./src",
+
+    /* type safety */
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "noUncheckedIndexedAccess": true,
+    "exactOptionalPropertyTypes": true,
+
+    /* imports */
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "resolveJsonModule": true,
+
+    /* decorators */
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+
+    /* node */
+    "types": ["node"],
+
+    /* performance */
+    "skipLibCheck": true,
+
+    /* qualidade */
+    "forceConsistentCasingInFileNames": true,
+
+    /* source maps */
+    "sourceMap": true,
+
+    /* build */
+    "incremental": true,
+
+    /* jsx */
+    "jsx": "react-jsx"
+  },
+
+  "include": ["src", "src/index.ts"],
+  "maxRetriesPerRequest": "null",
+
+  "exclude": [
+    "node_modules",
+    "dist"
+  ]
+}
