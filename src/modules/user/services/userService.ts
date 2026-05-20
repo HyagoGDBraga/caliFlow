@@ -1,5 +1,5 @@
 import { UserRepository } from "../repository/userRepository";
-import { UserDto, PartialUser } from "../dto/UserDto";
+import { UserDto, PartialUser, UserDtoResponseGet, UserDtoResponseCreate, UserDtoResponsePartial, UserDtoResponseUpdate, GetByIdResponse } from "../dto/UserDto";
 import { missingFields } from "@/helpers/missing_fields";
 import { User } from "../schema/userSchema";
 import { AppError } from "@/decorators/Error.decorator";
@@ -17,35 +17,55 @@ export class UserService {
     this.userRepo = userRepo;
   }
 
-
-  async getAllUser(role: Role, page: number, limit: number): Promise<User[]> {
-    try{
-      const cache = await clientRedis.get(userKeys.all(page, limit), 
-      )
-      if(cache){
+  async getAllUser(
+    role: Role,
+    page: number,
+    limit: number,
+  ): Promise<UserDtoResponseGet> {
+    try {
+      if(role == Role.USER){
+        assertAdmin(role);
+      }
+      const cache = await clientRedis.get(userKeys.all(page, limit));
+      if (cache) {
         return JSON.parse(cache);
       }
 
       const user = await this.userRepo.getAllUser(page, limit);
-      await clientRedis.set(userKeys.all(page, limit), JSON.stringify(`Usuário de número: ${incrementNumber(user)} \n` + user), 'EX', 60); 
-      return user;
-    }catch(err){
-      if(err instanceof Error){
+      await clientRedis.set(
+        userKeys.all(page, limit),
+        JSON.stringify(`Usuário de número: ${incrementNumber(user)} \n` + user),
+        "EX",
+        60,
+      );
+      const response = {user: user}
+      return response;
+    } catch (err) {
+      if (err instanceof Error) {
         throw err;
       }
-      throw new AppError(`Não existem usuários cadastrados ou não foi possível encontrar`, 404)
+      throw new AppError(
+        `Não existem usuários cadastrados ou não foi possível encontrar`,
+        404,
+      );
     }
   }
-  async createUser(data: UserDto): Promise<User> {
+  async createUser(data: UserDto): Promise<UserDtoResponseCreate> {
     try {
       missingFields(data, ["email", "name", "password", "role"]);
       const user = await this.userRepo.createUser(data);
-      await clientRedis.set(userKeys.create(data), JSON.stringify(user), 'EX', 60);
-      await userQueue.add('email', {
-        email: data.email
+      await clientRedis.set(
+        userKeys.create(data),
+        JSON.stringify(user),
+        "EX",
+        60,
+      );
+      await userQueue.add("email", {
+        email: data.email,
       });
+      const response = {user: user};
+      return response;
       
-      return user;
     } catch (err) {
       if (err instanceof Error) {
         throw err;
@@ -54,7 +74,11 @@ export class UserService {
     }
   }
 
-  async updateUser(data: UserDto, id: string, role: Role): Promise<User> {
+  async updateUser(
+    data: UserDto,
+    id: string,
+    role: Role,
+  ): Promise<GetByIdResponse> {
     try {
       if (!data) {
         throw new AppError(`Campos faltando`, 500);
@@ -68,12 +92,13 @@ export class UserService {
       missingFields(data, ["email", "name", "password", "role"]);
       await this.userRepo.updateUser(data, id);
       const user = await this.getUserById(id, role);
-      await clientRedis.set( userKeys.byId(id), JSON.stringify(user), 'EX', 60);
+      await clientRedis.set(userKeys.byId(id), JSON.stringify(user), "EX", 60);
       const key = await clientRedis.keys("users:*");
-      if(key != null && key.length > 0){
+      if (key != null && key.length > 0) {
         await clientRedis.del(...key);
       }
-      return user;
+       const response = {user: user};
+       return response;
     } catch (err) {
       if (err instanceof Error) {
         throw err;
@@ -82,7 +107,7 @@ export class UserService {
     }
   }
 
-  async getUserById(id: string, role: Role): Promise<User> {
+  async getUserById(id: string, role: Role): Promise<GetByIdResponse> {
     try {
       if (role == Role.USER) {
         assertAdmin(role);
@@ -91,17 +116,15 @@ export class UserService {
         throw new AppError(`ID faltando`, 400);
       }
       const cache = await clientRedis.get(userKeys.byId(id));
-      if(cache){
+      if (cache) {
         return JSON.parse(cache);
       }
       const user = await this.userRepo.getUserById(id);
-      await clientRedis.set(userKeys.byId(id),
-      JSON.stringify(user), 
-      'EX', 60
-     );
+      await clientRedis.set(userKeys.byId(id), JSON.stringify(user), "EX", 60);
 
       console.log(`User achado: ${user}`);
-      return user;
+      const response = {user: user};
+      return response;
     } catch (err) {
       if (err instanceof Error) {
         throw err;
@@ -110,26 +133,25 @@ export class UserService {
     throw new AppError(`Usuário não encontrado`, 404);
   }
 
-  async deletUser(id: string, role: Role):Promise<void>{
-    if(role === Role.USER){
+  async deletUser(id: string, role: Role): Promise<void> {
+    if (role === Role.USER) {
       assertAdmin(role);
     }
-    if(!id){
+    if (!id) {
       throw new AppError(`Id faltando, forneça o id!`, 400);
     }
     await this.userRepo.deleteUser(id);
   }
-  async getUserByEmail(email: string): Promise<User | null>{
-    try{
-        const user = await dataSource.getRepository(User);
-        const u_email = await user.findOne({where: {email}});
-        return u_email;
-    }catch (err) {
+  async getUserByEmail(email: string): Promise<User | null> {
+    try {
+      const user = await dataSource.getRepository(User);
+      const u_email = await user.findOne({ where: { email } });
+      return u_email;
+    } catch (err) {
       if (err instanceof Error) {
         throw err;
       }
     }
     throw new AppError(`Usuário não encontrado`, 404);
   }
-  
 }

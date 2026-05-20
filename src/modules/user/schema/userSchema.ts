@@ -4,8 +4,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
 import { Role } from "@/helpers/role.helper";
+import { Notification } from "@/modules/notification/schema/Notification.schema";
 
 @Entity("users")
 export class User {
@@ -37,4 +39,7 @@ export class User {
 
   @Column({ type: "array" })
   public friends?: User[];
+
+  @OneToMany(()=> Notification, (notification) => notification.user_email )
+  public notification?: Notification;
 }
