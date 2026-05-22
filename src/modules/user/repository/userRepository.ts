@@ -15,17 +15,24 @@ export class UserRepository {
     return user;
   }
 
-  async updateUser(updateData: User, id: string): Promise<User | null> {
-    await this.repository.update({ id }, updateData);
-    const user = await this.getUserById(id);
-    return user;
-  }
+async updateUser(updateData: Partial<User>, id: string): Promise<User | null> {
+  const user = await this.getUserById(id);
 
+  if (!user) return null;
+
+  Object.assign(user, updateData);
+
+  return this.repository.save(user);
+}
   async patchUser(patchData: Partial<User>, id: string): Promise<User | null> {
-    await this.repository.update({ id }, patchData);
-    const user = await this.getUserById(id);
-    return user;
-  }
+  const user = await this.getUserById(id);
+
+  if (!user) return null;
+
+  Object.assign(user, patchData);
+
+  return this.repository.save(user);
+}
   async deleteUser(id: string): Promise<void> {
     await this.repository.delete({ id });
   }

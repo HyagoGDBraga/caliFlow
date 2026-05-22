@@ -42,4 +42,8 @@ export class User {
 
   @OneToMany(()=> Notification, (notification) => notification.user_email )
   public notification?: Notification;
+
+  @ManyToMany(()=> Party, (party) => party.users)
+  public parties?: Party[];
 }
+
