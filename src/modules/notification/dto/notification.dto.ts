@@ -6,6 +6,23 @@ export type notificationDto = {
   message: string;
 };
 
-export type notificationResponse = {
+export type notificationResponseGet = {
+    notification: notificationDto[];
+}
+
+export type notificationResponseCreate = {
     notification: notificationDto;
 }
+
+export type notificationResponseGetById = {
+    notification: notificationDto;
+}
+
+export type notificationResponseUpdate = {
+    notification: notificationDto;
+}
+
+export type notificationResponsePatch = {
+    notification?: notificationDto;
+}
+

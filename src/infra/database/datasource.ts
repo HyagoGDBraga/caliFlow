@@ -1,7 +1,8 @@
 import "reflect-metadata"
 import { DataSource } from "typeorm"
-//import { User } from "./entities/User"
 import { envalid } from "@/env/envalid"
+import { User } from "@/modules/user/schema/userSchema";
+import { Notification } from "@/modules/notification/schema/Notification.schema";
 
 const dataSource = new DataSource({
     type: "postgres",
@@ -10,7 +11,7 @@ const dataSource = new DataSource({
     host: envalid.DB_HOST,
     password: envalid.DB_PASSWORD,
 
-    entities: [],
+    entities: [User, Notification],
     migrations: ["src/infra/database/migrations/*.ts"],
 
   synchronize: false,

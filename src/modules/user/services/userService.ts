@@ -92,13 +92,13 @@ export class UserService {
       missingFields(data, ["email", "name", "password", "role"]);
       await this.userRepo.updateUser(data, id);
       const user = await this.getUserById(id, role);
+    
       await clientRedis.set(userKeys.byId(id), JSON.stringify(user), "EX", 60);
       const key = await clientRedis.keys("users:*");
       if (key != null && key.length > 0) {
         await clientRedis.del(...key);
       }
-       const response = {user: user};
-       return response;
+       return user;
     } catch (err) {
       if (err instanceof Error) {
         throw err;
@@ -120,6 +120,9 @@ export class UserService {
         return JSON.parse(cache);
       }
       const user = await this.userRepo.getUserById(id);
+      if(!user){
+        throw new AppError(`Null`, 400);
+      }
       await clientRedis.set(userKeys.byId(id), JSON.stringify(user), "EX", 60);
 
       console.log(`User achado: ${user}`);

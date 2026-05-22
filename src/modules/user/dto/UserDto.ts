@@ -33,6 +33,10 @@ export type GetByIdResponse = {
   user: UserDto;
 };
 
+export type UserDtoResponsePatch = { 
+    user?: UserDto;
+}
+
 
 
 export type PartialUser = {
