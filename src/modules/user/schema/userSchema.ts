@@ -5,10 +5,12 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   OneToMany,
+  ManyToMany,
+  JoinTable,
 } from "typeorm";
 import { Role } from "@/helpers/role.helper";
 import { Notification } from "@/modules/notification/schema/Notification.schema";
-
+import { Party } from "@/modules/party/schema/Party.schema";
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn("uuid")
@@ -21,29 +23,41 @@ export class User {
   })
   public email!: string;
 
-  @Column({ type: "varchar", length: 100 })
+  @Column({
+    type: "varchar",
+    length: 100,
+  })
   public name!: string;
 
   @Column({
     type: "text",
-    length: 100,
-    unique: true,
+    nullable: true,
   })
   public bio?: string;
 
-  @Column({ type: "varchar", length: 100 })
+  @Column({
+    type: "varchar",
+    length: 100,
+  })
   public password!: string;
 
-  @Column({ type: "enum", default: Role.USER })
+  @Column({
+    type: "enum",
+    enum: Role,
+    default: Role.USER,
+  })
   public role!: Role;
 
-  @Column({ type: "array" })
+  @ManyToMany(() => User)
+  @JoinTable()
   public friends?: User[];
 
-  @OneToMany(()=> Notification, (notification) => notification.user_email )
-  public notification?: Notification;
+  @OneToMany(
+    () => Notification,
+    (notification) => notification.user_email
+  )
+  public notification?: Notification[];
 
-  @ManyToMany(()=> Party, (party) => party.users)
+  @ManyToMany(() => Party, (party) => party.users)
   public parties?: Party[];
 }
-

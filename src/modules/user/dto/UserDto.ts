@@ -9,7 +9,7 @@ export type UserDto = {
     email: string;
     password: string;
     friends?: User[]
-    notification?: Notification;
+    notification?: Notification[];
     role: Role;
 };
 

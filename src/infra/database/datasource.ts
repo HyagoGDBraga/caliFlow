@@ -3,6 +3,7 @@ import { DataSource } from "typeorm"
 import { envalid } from "@/env/envalid"
 import { User } from "@/modules/user/schema/userSchema";
 import { Notification } from "@/modules/notification/schema/Notification.schema";
+import { Party } from "@/modules/party/schema/Party.schema";
 
 const dataSource = new DataSource({
     type: "postgres",
@@ -11,7 +12,7 @@ const dataSource = new DataSource({
     host: envalid.DB_HOST,
     password: envalid.DB_PASSWORD,
 
-    entities: [User, Notification],
+    entities: [User, Notification, Party],
     migrations: ["src/infra/database/migrations/*.ts"],
 
   synchronize: false,
