@@ -52,6 +52,12 @@ export class User {
   @JoinTable()
   public friends?: User[];
 
+   @Column({
+    type: "varchar",
+    length: 100,
+  })
+  public photo!: string;
+
   @OneToMany(
     () => Notification,
     (notification) => notification.user_email

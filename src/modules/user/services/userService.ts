@@ -11,10 +11,13 @@ import { clientRedis } from "@/infra/cache";
 import { incrementNumber } from "@/helpers/increment_number";
 import { userWorker } from "@/infra/bullmq/workers/user.worker";
 import { userQueue } from "@/infra/queue";
+import { Bcrypt_service } from "@/infra/security/bcrypt/service/bcrypt.service";
 export class UserService {
   private readonly userRepo: UserRepository;
-  constructor(userRepo: UserRepository) {
+  private readonly bcryptService: Bcrypt_service
+  constructor(userRepo: UserRepository, bcryptService: Bcrypt_service) {
     this.userRepo = userRepo;
+    this.bcryptService = bcryptService;
   }
 
   async getAllUser(
@@ -53,7 +56,14 @@ export class UserService {
   async createUser(data: UserDto): Promise<UserDtoResponseCreate> {
     try {
       missingFields(data, ["email", "name", "password", "role"]);
-      const user = await this.userRepo.createUser(data);
+      const hash = await this.bcryptService.hashPassword(data.password);
+      
+      const userData = {
+        ...data,
+        password: hash
+      }
+
+      const user = await this.userRepo.createUser(userData);
       await clientRedis.set(
         userKeys.create(data),
         JSON.stringify(user),
@@ -90,7 +100,12 @@ export class UserService {
         assertAdmin(role);
       }
       missingFields(data, ["email", "name", "password", "role"]);
-      await this.userRepo.updateUser(data, id);
+      const hash = await this.bcryptService.hashPassword(data.password);
+      const userDataUpdated = {
+        ...data,
+        password: hash
+      }
+      await this.userRepo.updateUser(userDataUpdated, id);
       const user = await this.getUserById(id, role);
     
       await clientRedis.set(userKeys.byId(id), JSON.stringify(user), "EX", 60);

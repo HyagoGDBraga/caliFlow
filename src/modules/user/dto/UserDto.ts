@@ -8,6 +8,7 @@ export type UserDto = {
     bio?: string,
     email: string;
     password: string;
+    photo: string;
     friends?: User[]
     notification?: Notification[];
     role: Role;

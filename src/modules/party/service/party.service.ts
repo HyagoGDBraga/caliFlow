@@ -6,7 +6,8 @@ export class CaliPartyService {
         this.userService = userService
     }
 
-    async createParty(party: PartyDto): Promise<PartyDtoResponseCreate>{
+    async createParty(party: PartyDto)//: Promise<PartyDtoResponseCreate>
+    {
         
     }
 
