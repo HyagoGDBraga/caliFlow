@@ -172,4 +172,39 @@ export class UserService {
     }
     throw new AppError(`Usuário não encontrado`, 404);
   }
+
+  async partialUserUpdate(id: string, data: Partial<PartialUser>, role: Role): Promise<UserDtoResponsePartial>{
+    try{
+
+      if(role == Role.USER){
+        assertAdmin(role);
+      }
+      if(!id || typeof id !== 'string'){
+        throw new AppError(`Id faltando, por favor, forneça o id`, 400);
+      }
+      if(!data.user || data == undefined || data.user == undefined){
+        throw new AppError(`Data é undefiened`, 400);
+      }
+      missingFields(data, ["email", "name", "password", "role"]);
+      const hash = await this.bcryptService.hashPassword(data.user.password);
+      const userHashedPartial = {
+        ...data, password: hash,
+      }
+      await this.userRepo.patchUser(id , userHashedPartial);
+      const user = await this.getUserById(id, role);
+      await clientRedis.set(userKeys.byId(id), JSON.stringify(user), 'EX', 60);
+      
+      const key = await clientRedis.keys("users:*");
+      if (key != null && key.length > 0) {
+        await clientRedis.del(...key);
+      }
+      
+      return user;
+    }catch(err){
+      if(err instanceof Error){
+        throw err;
+      }
+      throw new AppError(`Não foi possível atualizar parte do usuário`, 400);
+    }
+  }
 }

@@ -1,7 +1,7 @@
 import { User } from "../schema/userSchema";
 import dataSource from "@/infra/database/datasource";
 import { pagination } from "@/helpers";
-import { AppError } from "@/decorators/Error.decorator";
+//import { AppError } from "@/decorators/Error.decorator";
 export class UserRepository {
   private repository = dataSource.getRepository(User);
 
@@ -24,7 +24,7 @@ async updateUser(updateData: Partial<User>, id: string): Promise<User | null> {
 
   return this.repository.save(user);
 }
-  async patchUser(patchData: Partial<User>, id: string): Promise<User | null> {
+  async patchUser(id: string, patchData: Partial<User>): Promise<User | null> {
   const user = await this.getUserById(id);
 
   if (!user) return null;

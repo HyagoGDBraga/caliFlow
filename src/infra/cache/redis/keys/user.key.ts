@@ -9,11 +9,14 @@ export const userKeys = {
     `users:profile:${id}`,
 
   update: (id: string, data: any) => 
-    `users:update ${id}`,
+    `users:update ${id} ${data}`,
 
   create: (data: any) => 
     `users:create`,
 
   delete: (id:string) =>
     `users: delete ${id}` 
+,
+  patch: (id: string, data: any) =>
+    `users: patch ${id}  ${data}`
 };
