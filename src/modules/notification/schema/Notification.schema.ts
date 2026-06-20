@@ -13,3 +13,4 @@ export class Notification {
    @JoinColumn({ name: "user_id" })
     public user_email!: User;
 }
+
