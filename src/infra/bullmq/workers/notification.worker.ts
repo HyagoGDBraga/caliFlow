@@ -1,13 +1,16 @@
-import { Worker } from "bullmq";
+import { Job, Worker } from "bullmq";
 import { AppError } from "@/decorators/Error.decorator";
 import { connection } from "../index";
 
-const notificationWorker = new Worker("notification", async (job) => {
-  (console.log(`Job: ${job.data}`),
-    {
-      connection,
-    });
-});
+const notificationWorker = new Worker(
+  "notification",
+  async (job: Job) => {
+    console.log("Job:", job.data);
+  },
+  {
+    connection,
+  }
+);
 
 notificationWorker.on(`completed`, (job) => {
   console.log(`Job completado: ${job.id}`);

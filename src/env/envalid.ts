@@ -21,6 +21,7 @@ export const envalid = cleanEnv(process.env, {
     DB_SSL: bool({default: false}),
     REDIS_HOST: str({desc: "Host do redis"}),
     REDIS_PORT: port({desc: "Porta do Redis"}),
+    GROQ_API_KEY: str({desc: "Chave api do groq"})
 });
 
 export const  allowed_domains = envalid.ALLOWED_DOMAINS.split(", ").map(domain =>domain.trim());
