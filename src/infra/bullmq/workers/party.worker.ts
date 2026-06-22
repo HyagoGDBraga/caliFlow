@@ -1,11 +1,10 @@
-import { Worker } from "bullmq";
+import { Job, Worker } from "bullmq";
 import { connection } from "../bullMq";
 import { AppError } from "@/decorators/Error.decorator";
-export const partyWorker = new Worker('party', async(job)=>{
-    console.log(`Worker party rodando: ${job.data}`, {
-        connection
-    })
-});
+export const partyWorker = new Worker('party', async(job: Job)=>{
+    console.log(`Worker party rodando: ${job.data}`
+        )
+}, {connection});
 
 partyWorker.on('active', (job)=>{
     console.log(`Worker ativo: ${job.data}`);

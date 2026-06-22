@@ -1,6 +1,6 @@
-import { Worker } from "bullmq";
+import { Worker, Job } from "bullmq";
 import { connection } from "../bullMq";
-const chatMessageWorker = new Worker("chatmessage", async (job)=>{
+const chatMessageWorker = new Worker("chatmessage", async (job: Job)=>{
 console.log(`Id do worker job: ${job.id}`)
     console.log(`Worker rodando: ${job.data}`); 
 },{

@@ -7,10 +7,12 @@ import {
   OneToMany,
   ManyToMany,
   JoinTable,
+  ManyToOne,
 } from "typeorm";
 import { Role } from "@/helpers/role.helper";
 import { Notification } from "@/modules/notification/schema/Notification.schema";
 import { Party } from "@/modules/party/schema/Party.schema";
+import { ClientIA } from "@/modules/clientIA/schema/ClientIa.schema";
 @Entity("users")
 export class User {
   @PrimaryGeneratedColumn("uuid")
@@ -52,18 +54,18 @@ export class User {
   @JoinTable()
   public friends?: User[];
 
-   @Column({
+  @Column({
     type: "varchar",
     length: 100,
   })
   public photo!: string;
 
-  @OneToMany(
-    () => Notification,
-    (notification) => notification.user_email
-  )
+  @OneToMany(() => Notification, (notification) => notification.user_email)
   public notification?: Notification[];
 
   @ManyToMany(() => Party, (party) => party.users)
   public parties?: Party[];
+
+  @OneToMany(() => ClientIA, (clientIa) => clientIa.user)
+  public clientIA_messages!: ClientIA[];
 }
