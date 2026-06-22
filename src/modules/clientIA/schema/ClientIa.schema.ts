@@ -15,6 +15,9 @@ export class ClientIA {
   @Column({type: 'enum', enum: MessageRole})
   public message_type!: MessageRole;
 
+  @Column({type: 'uuid'})
+  public conversationId!: string
+
   @ManyToOne(() => User, (user) => user.clientIA_messages, {
     onDelete: "CASCADE",
   })

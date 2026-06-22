@@ -1,13 +1,13 @@
 import OpenAI from "openai";
 import { envalid } from "@/env/envalid";
 
-const client = new OpenAI({
+export const clientGROQ_gpt = new OpenAI({
   apiKey: envalid.GROQ_API_KEY as string,
   baseURL: "https://api.groq.com/openai/v1",
 });
 
 async function main() {
-  const response = await client.responses.create({
+  const response = await clientGROQ_gpt.responses.create({
     model: "openai/gpt-oss-20b",
     input: "Explain the importance of fast language models",
   });

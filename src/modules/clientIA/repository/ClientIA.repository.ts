@@ -35,5 +35,17 @@ export class ClientIARepostiroy{
         const allClientIA = await this.repo.find({take: page, skip: limit});
         return allClientIA;
     }
-    
+
+async findMessagesByConversationId(
+  conversationId: string,
+): Promise<ClientIA[]> {
+  return await this.repo.find({
+    where: {
+      conversationId,
+    },
+    order: {
+      createdAt: "ASC",
+    },
+  });
+}
 }
